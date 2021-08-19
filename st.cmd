@@ -1,2 +1,0 @@
-python BiteAI.py
-pause
