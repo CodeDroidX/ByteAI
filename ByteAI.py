@@ -24,14 +24,14 @@ def json_add(entry, filename):
     data.update(entry)
     with open(filename.format(1), 'w', encoding='utf-8') as file:
         json.dump(data, file, ensure_ascii=False)
-def learn_book(S):
+def learn_chat_keys(S):
     book = open(S, 'r', encoding='utf-8')
     r = book.read()
     bookstrings = r.split(".")
     for i in range(1,len(bookstrings),2):
         if i + 1 < len(bookstrings):
-            data = [bookstrings[i].translate(str.maketrans('', '', string.punctuation))]
-            data.append(bookstrings[i-1].translate(str.maketrans('', '', string.punctuation)))
+            data = [str.lower(bookstrings[i].translate(str.maketrans('', '', string.punctuation))).strip()]
+            data.append(str.lower(bookstrings[i-1].translate(str.maketrans('', '', string.punctuation))).strip())
             #data = [bookstrings[i]]
             #data.append(bookstrings[i-1])
             key = long_substr(data)
@@ -61,6 +61,17 @@ def learn_book(S):
                 entry = {key2: key3}
                 #print(key2+"--"+key3)
                 json_add(entry, filename)
+def learn_chat(S):
+    book = open(S, 'r', encoding='utf-8')
+    r = book.read()
+    bookstrings = r.split("- ")
+    for i in range(1,len(bookstrings),2):
+        if i + 1 < len(bookstrings):
+            data = [str.lower(bookstrings[i]).strip()]
+            data.append(str.lower(bookstrings[i-1]).strip())
+            filename = 'Brain.json'
+            entry = {data[1]: data[0]}
+            json_add(entry, filename)
 def answer(S, filename):
     with open(filename, "r", encoding='utf-8') as file:
         data = json.load(file)
@@ -76,23 +87,51 @@ def answer(S, filename):
     toreturn.append(mindist)
     toreturn.append(minkey)
     return(toreturn)
-learn_book('food.txt')
+fn = 'food.txt'
+learn_chat_keys(fn)
 t = str(round(time.time()-start,3))
 print(Fore.GREEN + pname+" запустился за "+t+" sec)")
+ac = 0
 while True:
+    if int(ac) == -1:
+        print(Fore.GREEN)
+        print("Learned "+antiquest+" for "+lastquest)
+        entry = {lastquest: antiquest}
+        #print(key2+"--"+key3)
+        json_add(entry, 'Brain.json')
+    lastquest = quest
+    if int(ac) >= 10:
+        print(Fore.GREEN)
+        print("Что бы ты ответил на> "+quest+" ?")
+        antiquest = input(pname+" Learning > ")
+        entry = {quest: antiquest}
+        #print(key2+"--"+key3)
+        json_add(entry, 'Brain.json')
     print(Fore.YELLOW)
     quest = input(name+"> ")
     print()
     start = time.time()
+    questsplit = quest.split("^")
+
     x = answer(quest,'Brain.json')
     a = x[0]
+    if a == "":
+        a = "Не понял тебя("
+    else:
+        a = str.capitalize(a+".")
     ac = str(x[1])
+    if len(questsplit) > 1:
+        ac = -1
+        antiquest = questsplit[0]
+        quest = questsplit[1]
+    else:
+        quest = questsplit[0]
     ak = str(zlib.crc32(x[2].encode('utf-8')))[:5]
     #ac = ac/len(ak)
     #ac = ac*100
     #ac = str(100 - int(ac))
     t = str(time.time()-start)
-    print(Fore.CYAN + pname+"> "+a+"                        Неуверенность в ответе "+ac+", Время ответа "+t+" sec, совпавший ключ - "+ak)
+    print(Fore.CYAN + pname+"> "+str(a)+"                        Неуверенность в ответе "+str(ac)+", time="+str(t)+" sec, совпавший ключ - "+str(ak))
 
 
         
