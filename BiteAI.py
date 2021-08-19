@@ -1,7 +1,8 @@
 import json
 import Levenshtein as lev
 import string
-import os;
+import os
+import zlib
 name =  os.environ.get( "USERNAME" )
 pname = "ByteAI"
 from colorama import init, Fore
@@ -85,13 +86,13 @@ while True:
     start = time.time()
     x = answer(quest,'Brain.json')
     a = x[0]
-    ac = x[1]
-    ak = x[2]
-    ac = ac/len(ak)
-    ac = ac*100
-    ac = str(100 - int(ac))
+    ac = str(x[1])
+    ak = str(zlib.crc32(x[2].encode('utf-8')))[:5]
+    #ac = ac/len(ak)
+    #ac = ac*100
+    #ac = str(100 - int(ac))
     t = str(time.time()-start)
-    print(Fore.CYAN + pname+"> "+a+"                        Уверенность в ответе "+ac+"%, Время ответа "+t+" sec")
+    print(Fore.CYAN + pname+"> "+a+"                        Неуверенность в ответе "+ac+", Время ответа "+t+" sec, совпавший ключ - "+ak)
 
 
         
