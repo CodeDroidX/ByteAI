@@ -1,6 +1,14 @@
 import json
 import Levenshtein as lev
 import string
+import os;
+name =  os.environ.get( "USERNAME" )
+pname = "ByteAI"
+from colorama import init, Fore
+init(convert=True)
+import time
+print(Fore.RED + pname+" Запускается...")
+start = time.time()
 def long_substr(data):
     substr = ''
     if len(data) > 1 and len(data[0]) > 0:
@@ -39,18 +47,18 @@ def learn_book(S):
             filename = 'Brain.json'
             if(key0 == "" and key3 == ""):
                 entry = {key2: key1}
-                print(key2+"--"+key1)
+                #print(key2+"--"+key1)
                 json_add(entry, filename)
             elif(key1 == "" and key2 == ""):
                 entry = {key0: key3}
-                print(key0+"--"+key3)
+                #print(key0+"--"+key3)
                 json_add(entry, filename)
             else:
                 entry = {key0: key1}
-                print(key0+"--"+key1)
+                #print(key0+"--"+key1)
                 json_add(entry, filename)
                 entry = {key2: key3}
-                print(key2+"--"+key3)
+                #print(key2+"--"+key3)
                 json_add(entry, filename)
 def answer(S, filename):
     with open(filename, "r", encoding='utf-8') as file:
@@ -68,8 +76,13 @@ def answer(S, filename):
     toreturn.append(minkey)
     return(toreturn)
 learn_book('food.txt')
+t = str(round(time.time()-start,3))
+print(Fore.GREEN + pname+" запустился за "+t+" sec)")
 while True:
-    quest = input("> ")
+    print(Fore.YELLOW)
+    quest = input(name+"> ")
+    print()
+    start = time.time()
     x = answer(quest,'Brain.json')
     a = x[0]
     ac = x[1]
@@ -77,6 +90,8 @@ while True:
     ac = ac/len(ak)
     ac = ac*100
     ac = str(100 - int(ac))
-    print(a+"                        Уверенность в ответе-"+ac+"%")
+    t = str(time.time()-start)
+    print(Fore.CYAN + pname+"> "+a+"                        Уверенность в ответе "+ac+"%, Время ответа "+t+" sec")
+
 
         
