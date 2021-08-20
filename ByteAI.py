@@ -137,6 +137,29 @@ for voice in voices:
 print(Fore.GREEN)
 v = input(pname+": Выберите номер голоса озвучки. Например 1> ")
 engine.setProperty("voice", voices[int(v)-1].id)
+print(Fore.YELLOW)
+vv = input(pname+": Голосовой ввод? y/n> ")
+if vv == "y":
+    voiceinp=True
+    import speech_recognition as sr
+    r = sr.Recognizer()
+    def voice_input(txt):
+        isvoicetext = False
+        while(isvoicetext!=True):
+            with sr.Microphone() as source:
+                print(txt,end='')
+                audio = r.listen(source)
+            try:
+                ret= r.recognize_google(audio, language="ru-RU")
+                print(ret)
+                isvoicetext = True
+                return(ret)
+            except sr.UnknownValueError:
+                print("Речь не распознана(")
+            except sr.RequestError as e:
+                print("Ошибка сервиса распознания речи; {0}".format(e))
+else:
+    voiceinp=False
 os.system('cls' if os.name == 'nt' else 'clear')
 print(Fore.RED + "Диалог "+pname+":")
 ac = 0
@@ -153,15 +176,21 @@ while True:
     lastquest = quest
     if int(ac) >= 10:
         print(Fore.GREEN)
-        engine.say("Что бы ты ответил на> "+quest+" ?")
-        engine.runAndWait()
         print("Что бы ты ответил на> "+quest+" ?")
-        antiquest = input(pname+" Learning > ")
+        engine.say("Что бы ты ответил на "+quest+" ?")
+        engine.runAndWait()
+        if voiceinp:
+            antiquest = voice_input(pname+" Learning > ").lower()
+        else:
+            antiquest = input(pname+" Learning > ").lower()
         entry = {quest: antiquest}
         #print(key2+"--"+key3)
         json_add(entry, mainbrainname)
     print(Fore.YELLOW)
-    quest = input(name+"> ")
+    if voiceinp:
+        quest = voice_input(name+"> ").lower()
+    else:
+        quest = input(name+"> ").lower()
     print()
     start = time.time()
     questsplit = quest.split("^")
