@@ -1,15 +1,27 @@
+import time
+from colorama import init, Fore
+init(convert=True)
+start = time.time()
 import json
 import Levenshtein as lev
 import string
 import os
 import zlib
+import pyttsx3
+import os
+log = open("Logs\Work.log", "a+")
+log.seek(0)
+os.system('cls' if os.name == 'nt' else 'clear')
+engine = pyttsx3.init()
 name =  os.environ.get( "USERNAME" )
 pname = "ByteAI"
-from colorama import init, Fore
-init(convert=True)
-import time
 print(Fore.RED + pname+" Запускается...")
-start = time.time()
+print(Fore.CYAN)
+engine.setProperty('voice', "ru")
+engine.setProperty('rate', 130)
+def Log(Text):
+    log.write(Text + "\n")
+    log.flush()
 def long_substr(data):
     substr = ''
     if len(data) > 1 and len(data[0]) > 0:
@@ -91,7 +103,17 @@ fn = 'food.txt'
 learn_chat_keys(fn)
 t = str(round(time.time()-start,3))
 print(Fore.GREEN + pname+" запустился за "+t+" sec)")
+print(Fore.CYAN)
+voices = engine.getProperty('voices')
+for voice in voices:
+    print("Голос: %s" % voice.name)
+    print("\n")
+print(Fore.GREEN)
+v = input(pname+": Выберите номер голоса озвучки. Например 1> ")
+engine.setProperty("voice", voices[int(v)-1].id)
+os.system('cls' if os.name == 'nt' else 'clear')
 ac = 0
+quest = ""
 while True:
     if int(ac) == -1:
         print(Fore.GREEN)
@@ -130,8 +152,11 @@ while True:
     #ac = ac/len(ak)
     #ac = ac*100
     #ac = str(100 - int(ac))
-    t = str(time.time()-start)
+    Log(quest + "-" +str(a))
+    t = str(round(time.time()-start,3))
     print(Fore.CYAN + pname+"> "+str(a)+"                        Неуверенность в ответе "+str(ac)+", time="+str(t)+" sec, совпавший ключ - "+str(ak))
+    engine.say(str(a))
+    engine.runAndWait()
 
 
         
