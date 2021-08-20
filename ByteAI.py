@@ -10,6 +10,7 @@ import zlib
 import pyttsx3
 import os
 import fnmatch
+from Brains import ActionBrain as ab
 log = open("Logs\Work.log", "a+")
 log.seek(0)
 os.system('cls' if os.name == 'nt' else 'clear')
@@ -111,8 +112,8 @@ def answer(S, filename):
     toreturn.append(mindist)
     toreturn.append(minkey)
     return(toreturn)
-mainbrainname = "Brains\\Brain.json"
-brains = fnmatch.filter(os.listdir("Brains\\"), "*.json")
+mainbrainname = "Brains\\Brain.speakbrain"
+brains = fnmatch.filter(os.listdir("Brains\\"), "*.speakbrain")
 
 braincount = len(brains)
 if braincount > 1:
@@ -141,6 +142,7 @@ print(Fore.RED + "Диалог "+pname+":")
 ac = 0
 quest = ""
 while True:
+
     if int(ac) == -1:
         print(Fore.GREEN)
         engine.say("Обучен ответ "+antiquest+" на "+lastquest)
@@ -164,28 +166,45 @@ while True:
     start = time.time()
     questsplit = quest.split("^")
 
-    x = answer(quest,mainbrainname)
-    a = x[0]
-    if a == "":
-        a = "Не понял тебя("
-    else:
-        a = str.capitalize(a+".")
-    ac = str(x[1])
-    if len(questsplit) > 1:
-        ac = -1
-        antiquest = questsplit[0]
-        quest = questsplit[1]
-    else:
-        quest = questsplit[0]
-    ak = str(zlib.crc32(x[2].encode('utf-8')))[:5]
-    #ac = ac/len(ak)
-    #ac = ac*100
-    #ac = str(100 - int(ac))
-    Log(quest + "-" +str(a))
-    t = str(round(time.time()-start,3))
-    print(Fore.CYAN + pname+"> "+str(a)+"                        Неуверенность в ответе "+str(ac)+", time="+str(t)+" sec, совпавший ключ - "+str(ak))
-    engine.say(str(a))
-    engine.runAndWait()
+    with open('Brains\\Brain.funcbrain', "r", encoding='utf-8') as file:
+        data = json.load(file)
+    akeys = data.keys()
+    funcac = 0
+    iс = 0
+    for i in akeys:
+        for iq in quest.split(' '):
+            if i.find(iq) > -1:
+                iс = iс + 1
+                globaliq = iq
+        if iс > 0:
+            for ii in i.split(", "):
+                if quest.find(ii) > -1:
+                    funcac = funcac + 1
+                    eval(data[i])
+            
+    if funcac == 0:
+        x = answer(quest,mainbrainname)
+        a = x[0]
+        if a == "":
+            a = "Не понял тебя("
+        else:
+            a = str.capitalize(a+".")
+        ac = str(x[1])
+        if len(questsplit) > 1:
+            ac = -1
+            antiquest = questsplit[0]
+            quest = questsplit[1]
+        else:
+            quest = questsplit[0]
+        ak = str(zlib.crc32(x[2].encode('utf-8')))[:5]
+        #ac = ac/len(ak)
+        #ac = ac*100
+        #ac = str(100 - int(ac))
+        Log(quest + "-" +str(a))
+        t = str(round(time.time()-start,3))
+        print(Fore.CYAN + pname+"> "+str(a)+"                        Неуверенность в ответе "+str(ac)+", time="+str(t)+" sec, совпавший ключ - "+str(ak))
+        engine.say(str(a))
+        engine.runAndWait()
 
 
         
