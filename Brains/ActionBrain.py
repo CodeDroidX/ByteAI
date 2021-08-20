@@ -7,6 +7,8 @@ def Shutd():
     os.system('shutdown /s')
 def Shutdoff():
     os.system('shutdown /a')
+def OpenExit():
+    exit()
 def OpenInternet(q,k):
     quest = q.split(k, 1)
     if len(quest[1].strip().split(".")) == 1:
