@@ -9,6 +9,7 @@ import os
 import zlib
 import pyttsx3
 import os
+import fnmatch
 log = open("Logs\Work.log", "a+")
 log.seek(0)
 os.system('cls' if os.name == 'nt' else 'clear')
@@ -36,6 +37,17 @@ def json_add(entry, filename):
     data.update(entry)
     with open(filename.format(1), 'w', encoding='utf-8') as file:
         json.dump(data, file, ensure_ascii=False)
+
+def merge_brains(mainfilename, filename):
+    print(Fore.YELLOW)
+    print("Слияние "+ filename +" c "+mainfilename)
+    with open(mainfilename, "r", encoding='utf-8') as file:
+        data = json.load(file)
+    with open(filename, "r", encoding='utf-8') as file:
+        merge_data = json.load(file)
+    data.update(merge_data)
+    with open(mainfilename.format(1), 'w', encoding='utf-8') as file:
+        json.dump(data, file, ensure_ascii=False)
 def learn_chat_keys(S):
     book = open(S, 'r', encoding='utf-8')
     r = book.read()
@@ -57,7 +69,7 @@ def learn_chat_keys(S):
             key1 = ks0[0].strip()
             key2 = ks1[1].strip()
             key3 = ks0[1].strip()
-            filename = 'Brain.json'
+            filename = mainbrainname
             if(key0 == "" and key3 == ""):
                 entry = {key2: key1}
                 #print(key2+"--"+key1)
@@ -81,7 +93,7 @@ def learn_chat(S):
         if i + 1 < len(bookstrings):
             data = [str.lower(bookstrings[i]).strip()]
             data.append(str.lower(bookstrings[i-1]).strip())
-            filename = 'Brain.json'
+            filename = mainbrainname
             entry = {data[1]: data[0]}
             json_add(entry, filename)
 def answer(S, filename):
@@ -99,10 +111,23 @@ def answer(S, filename):
     toreturn.append(mindist)
     toreturn.append(minkey)
     return(toreturn)
+mainbrainname = "Brains\\Brain.json"
+brains = fnmatch.filter(os.listdir("Brains\\"), "*.json")
+
+braincount = len(brains)
+if braincount > 1:
+    print(Fore.MAGENTA + "Найдено " + str(braincount) +" brains: ")
+    print(brains)
+    for i in brains:
+        if "Brains\\"+i == mainbrainname:
+            pass
+        else:
+            merge_brains(mainbrainname, "Brains\\"+i)
 fn = 'food.txt'
 learn_chat_keys(fn)
 t = str(round(time.time()-start,3))
-print(Fore.GREEN + pname+" запустился за "+t+" sec)")
+print(Fore.RED)
+print(pname+" запустился за "+t+" sec)")
 print(Fore.CYAN)
 voices = engine.getProperty('voices')
 for voice in voices:
@@ -112,30 +137,34 @@ print(Fore.GREEN)
 v = input(pname+": Выберите номер голоса озвучки. Например 1> ")
 engine.setProperty("voice", voices[int(v)-1].id)
 os.system('cls' if os.name == 'nt' else 'clear')
+print(Fore.RED + "Диалог "+pname+":")
 ac = 0
 quest = ""
 while True:
     if int(ac) == -1:
         print(Fore.GREEN)
+        engine.say("Обучен ответ "+antiquest+" на "+lastquest)
         print("Learned "+antiquest+" for "+lastquest)
         entry = {lastquest: antiquest}
         #print(key2+"--"+key3)
-        json_add(entry, 'Brain.json')
+        json_add(entry, mainbrainname)
     lastquest = quest
     if int(ac) >= 10:
         print(Fore.GREEN)
+        engine.say("Что бы ты ответил на> "+quest+" ?")
+        engine.runAndWait()
         print("Что бы ты ответил на> "+quest+" ?")
         antiquest = input(pname+" Learning > ")
         entry = {quest: antiquest}
         #print(key2+"--"+key3)
-        json_add(entry, 'Brain.json')
+        json_add(entry, mainbrainname)
     print(Fore.YELLOW)
     quest = input(name+"> ")
     print()
     start = time.time()
     questsplit = quest.split("^")
 
-    x = answer(quest,'Brain.json')
+    x = answer(quest,mainbrainname)
     a = x[0]
     if a == "":
         a = "Не понял тебя("
