@@ -184,9 +184,10 @@ while True:
             antiquest = voice_input(pname+" Learning > ").lower()
         else:
             antiquest = input(pname+" Learning > ").lower()
-        entry = {quest: antiquest}
-        #print(key2+"--"+key3)
-        json_add(entry, mainbrainname)
+        if antiquest != "отмена" and antiquest != "cancel" and antiquest != "отменить":
+            entry = {quest: antiquest}
+            #print(key2+"--"+key3)
+            json_add(entry, mainbrainname)
     print(Fore.YELLOW)
     if voiceinp:
         quest = voice_input(name+"> ").lower()
