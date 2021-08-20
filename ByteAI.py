@@ -151,6 +151,7 @@ if vv == "y":
                 audio = r.listen(source)
             try:
                 ret= r.recognize_google(audio, language="ru-RU")
+                #ret= r.recognize_google(audio)
                 print(ret)
                 isvoicetext = True
                 return(ret)
