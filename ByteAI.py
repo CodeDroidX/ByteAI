@@ -18,7 +18,7 @@ translator = Translator()
 from Brains import ActionBrain as ab
 log = open("Logs\Work.log", "a+")
 log.seek(0)
-#os.system('cls' if os.name == 'nt' else 'clear')
+os.system('cls' if os.name == 'nt' else 'clear')
 engine = pyttsx3.init()
 name =  os.environ.get( "USERNAME" )
 pname = "ByteAI"
@@ -97,6 +97,8 @@ def learn_chat_keys(S):
 
 
 def say_x(S):
+    if lan != "":
+        S = translator.translate(S, dest=lan).text
     if(True):
         engine.save_to_file(S, 'speech.wav')
         engine.runAndWait()
@@ -188,7 +190,9 @@ for voice in voices:
     print("Голос: %s" % voice.name)
     print("\n")
 print(Fore.GREEN)
+lan = input(pname+": Выберите любой язык перевода озвучки (можете оставить поле пустым, тогда переводчик не будет работать). Например: Ja, Fr, En, Ch > ")
 v = input(pname+": Выберите номер голоса озвучки. Например 1> ")
+
 engine.setProperty("voice", voices[int(v)-1].id)
 print(Fore.YELLOW)
 vv = input(pname+": Голосовой ввод? y/n> ")
