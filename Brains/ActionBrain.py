@@ -66,17 +66,15 @@ def GetSortBrain(filename,opti):
     with open(opti, "r", encoding='utf-8') as file:
         dataop = json.load(file)
     with open(filename.format(1), 'w', encoding='utf-8') as file:
-        print("Brain rebuild...")
         json.dump({}, file, ensure_ascii=False)
     for i in dataop.keys():
         entry = {i: data[i]}
         json_add(entry, filename)
-    print("Brain rebuilded!")
             
     
 def Teach(q,k,mainbrainname,lastquest):
     #mainbrainname = mainbrainname.split("\\")[1]
-    if (q.split(k, 1)[0].strip() == ""):
+    if (q.split(k, 1)[0].strip() != ""):
         lastquest = q.split(k, 1)[0].strip()
     antiquest = q.split(k, 1)[1].strip()
     entry = {lastquest: antiquest}

@@ -114,7 +114,13 @@ def answer(S, filename):
             mindist = dist
     with open(opti, "r", encoding='utf-8') as file:
         datao = json.load(file)
-    datao[minkey] = str(int(datao[minkey]) + 1)
+    try:
+        datao[minkey] = str(int(datao[minkey]) + 1)
+    except KeyError:
+        ab.GetSortBrain(mainbrainname,opti)
+        with open(opti, "r", encoding='utf-8') as file:
+            datao = json.load(file)
+        datao[minkey] = str(int(datao[minkey]) + 1)
     with open(opti.format(1), 'w', encoding='utf-8') as file:
         json.dump(datao, file, ensure_ascii=False)
     toreturn = [data[minkey]]
