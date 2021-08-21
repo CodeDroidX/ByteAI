@@ -97,6 +97,10 @@ def learn_chat(S):
             filename = mainbrainname
             entry = {data[1]: data[0]}
             json_add(entry, filename)
+opti = "Brains\\Brain.optibrain"
+mainbrainname = "Brains\\Brain.speakbrain"
+brains = fnmatch.filter(os.listdir("Brains\\"), "*.speakbrain")
+
 def answer(S, filename):
     with open(filename, "r", encoding='utf-8') as file:
         data = json.load(file)
@@ -108,12 +112,16 @@ def answer(S, filename):
         if mindist > dist:
             minkey = ii
             mindist = dist
+    with open(opti, "r", encoding='utf-8') as file:
+        datao = json.load(file)
+    datao[minkey] = str(int(datao[minkey]) + 1)
+    with open(opti.format(1), 'w', encoding='utf-8') as file:
+        json.dump(datao, file, ensure_ascii=False)
     toreturn = [data[minkey]]
     toreturn.append(mindist)
     toreturn.append(minkey)
     return(toreturn)
-mainbrainname = "Brains\\Brain.speakbrain"
-brains = fnmatch.filter(os.listdir("Brains\\"), "*.speakbrain")
+
 
 braincount = len(brains)
 if braincount > 1:
@@ -184,7 +192,7 @@ while True:
             antiquest = voice_input(pname+" Learning > ").lower()
         else:
             antiquest = input(pname+" Learning > ").lower()
-        if antiquest != "отмена" and antiquest != "cancel" and antiquest != "отменить":
+        if antiquest != "отмена" and antiquest != "cancel" and antiquest != "отменить" and antiquest != "отклонить":
             entry = {quest: antiquest}
             #print(key2+"--"+key3)
             json_add(entry, mainbrainname)
@@ -211,7 +219,9 @@ while True:
             for ii in i.split(", "):
                 if quest.find(ii) > -1:
                     funcac = funcac + 1
+                    print(Fore.MAGENTA)
                     eval(data[i])
+                    print(Fore.YELLOW)
             
     if funcac == 0:
         x = answer(quest,mainbrainname)
