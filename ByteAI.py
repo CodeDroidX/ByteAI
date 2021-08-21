@@ -10,17 +10,23 @@ import zlib
 import pyttsx3
 import os
 import fnmatch
+from playsound import playsound
+from pydub import AudioSegment
+from pydub.playback import play
+from googletrans import Translator
+translator = Translator()
 from Brains import ActionBrain as ab
 log = open("Logs\Work.log", "a+")
 log.seek(0)
-os.system('cls' if os.name == 'nt' else 'clear')
+#os.system('cls' if os.name == 'nt' else 'clear')
 engine = pyttsx3.init()
 name =  os.environ.get( "USERNAME" )
 pname = "ByteAI"
 print(Fore.RED + pname+" Запускается...")
 print(Fore.CYAN)
 engine.setProperty('voice', "ru")
-engine.setProperty('rate', 130)
+engine.setProperty('rate', 110)
+engine.setProperty('123', 30)
 def Log(Text):
     log.write(Text + "\n")
     log.flush()
@@ -86,6 +92,39 @@ def learn_chat_keys(S):
                 entry = {key2: key3}
                 #print(key2+"--"+key3)
                 json_add(entry, filename)
+
+
+
+
+def say_x(S):
+    if(True):
+        engine.save_to_file(S, 'speech.wav')
+        engine.runAndWait()
+        sound = AudioSegment.from_file('speech.wav', format="wav")
+
+
+        # shift the pitch up by half an octave (speed will increase proportionally)
+        octaves = 0.6
+
+        new_sample_rate = int(sound.frame_rate * (2.0 ** octaves))
+
+        # keep the same samples but tell the computer they ought to be played at the 
+        # new, higher sample rate. This file sounds like a chipmunk but has a weird sample rate.
+        hipitch_sound = sound._spawn(sound.raw_data, overrides={'frame_rate': new_sample_rate})
+
+        # now we just convert it to a common sample rate (44.1k - standard audio CD) to 
+        # make sure it works in regular audio players. Other than potentially losing audio quality (if
+        # you set it too low - 44.1k is plenty) this should now noticeable change how the audio sounds.
+        hipitch_sound = hipitch_sound.set_frame_rate(44100)
+
+        #Play pitch changed sound
+        play(hipitch_sound)
+
+
+
+
+
+
 def learn_chat(S):
     book = open(S, 'r', encoding='utf-8')
     r = book.read()
@@ -153,6 +192,9 @@ v = input(pname+": Выберите номер голоса озвучки. На
 engine.setProperty("voice", voices[int(v)-1].id)
 print(Fore.YELLOW)
 vv = input(pname+": Голосовой ввод? y/n> ")
+antiqlimit = 10
+if (input(pname+": Разрешить обучение? y/n> ")=="n"):
+    antiqlimit = 100
 if vv == "y":
     voiceinp=True
     import speech_recognition as sr
@@ -183,17 +225,16 @@ while True:
 
     if int(ac) == -1:
         print(Fore.GREEN)
-        engine.say("Обучен ответ "+antiquest+" на "+lastquest)
+        say_x("Обучен ответ "+antiquest+" на "+lastquest)
         print("Learned "+antiquest+" for "+lastquest)
         entry = {lastquest: antiquest}
         #print(key2+"--"+key3)
         json_add(entry, mainbrainname)
     lastquest = quest
-    if int(ac) >= 10:
+    if int(ac) >= antiqlimit:
         print(Fore.GREEN)
         print("Что бы ты ответил на> "+quest+" ?")
-        engine.say("Что бы ты ответил на "+quest+" ?")
-        engine.runAndWait()
+        say_x("Что бы ты ответил на "+quest+" ?")
         if voiceinp:
             antiquest = voice_input(pname+" Learning > ").lower()
         else:
@@ -228,7 +269,6 @@ while True:
                     print(Fore.MAGENTA)
                     eval(data[i])
                     print(Fore.YELLOW)
-            
     if funcac == 0:
         x = answer(quest,mainbrainname)
         a = x[0]
@@ -249,9 +289,13 @@ while True:
         #ac = str(100 - int(ac))
         Log(quest + "-" +str(a))
         t = str(round(time.time()-start,3))
-        print(Fore.CYAN + pname+"> "+str(a)+"                        Неуверенность в ответе "+str(ac)+", time="+str(t)+" sec, совпавший ключ - "+str(ak))
-        engine.say(str(a))
-        engine.runAndWait()
+        if antiqlimit == 10:
+            print(Fore.CYAN + pname+"> "+str(a)+"                        Неуверенность в ответе "+str(ac)+", time="+str(t)+" sec, совпавший ключ - "+str(ak))
+        else:
+            print(Fore.CYAN + pname+"> "+str(a))
+        say_x(str(a))
+
+
 
 
         
