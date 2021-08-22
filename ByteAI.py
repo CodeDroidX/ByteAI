@@ -103,7 +103,7 @@ def say_x(S):
         engine.save_to_file(S, 'speech.wav')
         engine.runAndWait()
         sound = AudioSegment.from_file('speech.wav', format="wav")
-
+        os.remove('speech.wav')
 
         # shift the pitch up by half an octave (speed will increase proportionally)
         octaves = 0.6
@@ -121,7 +121,6 @@ def say_x(S):
 
         #Play pitch changed sound
         play(hipitch_sound)
-
 
 
 

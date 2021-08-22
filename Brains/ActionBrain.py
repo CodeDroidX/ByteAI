@@ -2,7 +2,7 @@ import webbrowser
 import os
 import json
 import Levenshtein as lev
-
+from colorama import init, Fore
 def in_dict(key, dict):
     return key in dict
 def json_add(entry, filename):
@@ -81,6 +81,11 @@ def Teach(q,k,mainbrainname,lastquest):
     json_add(entry, mainbrainname)
     print("Learned "+antiquest+" for "+lastquest)
 
+def OpenCls(pname):
+    os.system('cls' if os.name == 'nt' else 'clear')
+    with open('Logs\\Work.log','w') as file:
+        file.write('Started log')
+    print(Fore.RED + "Диалог "+pname+":")
 def OpenInternet(q,k):
     quest = q.split(k, 1)
     if len(quest[1].strip().split(".")) == 1:
@@ -89,3 +94,9 @@ def OpenInternet(q,k):
         q = quest[1].strip()
     print("Web "+q)
     webbrowser.open('https://'+q, new=1)
+
+def OpenSerInternet(q,k):
+    quest = q.split(k, 1)
+    q = quest[1].strip()
+    print("Web "+q)
+    webbrowser.open('https://yandex.ru/search/?lr=123123&text='+q, new=1)
