@@ -260,6 +260,7 @@ while True:
     akeys = data.keys()
     funcac = 0
     iс = 0
+
     for i in akeys:
         for iq in quest.split(' '):
             if i.find(iq) > -1:

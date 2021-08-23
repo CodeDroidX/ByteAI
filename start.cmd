@@ -1,1 +1,2 @@
 python ByteAI.py
+pause
